@@ -1,0 +1,18 @@
+{
+  "name": "netology-homework",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "date": "./002-console/date.js",
+    "game": "./002-console/game.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "yargs": "^18.0.0"
+  }
+}
