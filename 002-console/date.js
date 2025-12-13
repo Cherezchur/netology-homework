@@ -29,9 +29,7 @@ function showPastOrfutureDate(argv, isPast = false) {
         return true;
     }
 
-    const setChangeDate = (alias) => {      
-        console.log('setChangeDate');
-        
+    const setChangeDate = (alias) => {            
         let currentDate = new Date();
 
         const getTargetValue = (currentValue, argvValue) => isPast

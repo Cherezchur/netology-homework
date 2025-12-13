@@ -5,6 +5,13 @@ const { stdin: input, stdout: output } = require('node:process');
 
 const rl = readline.createInterface({ input, output });
 
+rl.on('SIGINT', () => {
+  console.log('Получен SIGINT. Завершаем работу...');
+  rl.close();
+  process.exit(0);
+});
+
+
 function askQuestion(query) {
   return new Promise(resolve => {
     rl.question(query, answer => {
@@ -14,42 +21,15 @@ function askQuestion(query) {
 }
 
 async function main() {
-    let lowNumber;
-    let hideNumber;
+    const MIN = 1;
+    const MAX = 100;
+    const randomNumber = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
     let customNumber;
 
     while (true) {
-        const num = await askQuestion('Введине нижнюю границу диапазона (число): ');
-        lowNumber = Number(num);
-        if (!isNaN(lowNumber)) {
-            console.log(`Спасибо! Вы ввели число: ${lowNumber}`);
-            break;
-        } else {
-            console.log('Некорректный ввод, введите число');
-        }
-    }
-
-    while (true) {
-        const num = await askQuestion('Введине верхнюю границу диапазона (число): ');
-        hideNumber = Number(num);
-        if (isNaN(hideNumber)) {
-            console.log('Некорректный ввод, введите число');
-        } else if (hideNumber < lowNumber) {
-            console.log('Некорректный ввод, верхняя граница должна быть больше');
-        } else {
-            console.log(`Спасибо! Вы ввели число: ${hideNumber}`);
-            break;
-        }
-    }
-
-    const min = Math.ceil(lowNumber);
-    const max = Math.floor(hideNumber);
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-
-    while (true) {
-        const num = await askQuestion(`Загадано число в диапазоне от ${min} до ${max}: `);
+        const num = await askQuestion(`Загадано число в диапазоне от ${MIN} до ${MAX}: `);
         customNumber = Number(num);
-        if (isNaN(num)) {
+        if (isNaN(customNumber)) {
             console.log('Некорректный ввод, введите число');
         } else {
             break;
