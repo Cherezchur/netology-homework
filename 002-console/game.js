@@ -21,33 +21,46 @@ function askQuestion(query) {
 }
 
 async function main() {
-    const MIN = 1;
-    const MAX = 100;
-    const randomNumber = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
-    let customNumber;
+  let customNumber;
+  const MIN = 0;
+  const MAX = 100;
+  const randomNumber = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
+  const UNCORRECT_OUTPUT = `Введите число от ${MIN} до ${MAX}`;
 
-    while (true) {
-        const num = await askQuestion(`Загадано число в диапазоне от ${MIN} до ${MAX}: `);
-        customNumber = Number(num);
-        if (isNaN(customNumber)) {
-            console.log('Некорректный ввод, введите число');
-        } else {
-            break;
-        }
+  const checkNumber = (input) => isNaN(Number(input)) || customNumber < MIN || customNumber > MAX
+
+  while (true) {
+    const input = await askQuestion(`Загадано число в диапазоне от ${MIN} до ${MAX}: `);
+    if (isNaN(Number(input))) {
+        console.log(UNCORRECT_OUTPUT);
+    } else {
+        customNumber = Number(input);
+        break;
     }
+  }
 
-    while (true) {
-        if (customNumber < randomNumber) {
-            customNumber = await askQuestion('Больше: ');
-        } else if (customNumber > randomNumber) {
-            customNumber = await askQuestion('Меньше: ');
-        } else {
-            console.log(`Отгадано число ${customNumber}`);
-            break;
-        }
+  while (true) {
+    if (customNumber < randomNumber) {
+      const input = await askQuestion('Больше: ');
+      if (checkNumber(input)) {
+        console.log(UNCORRECT_OUTPUT);
+        continue;
+      }
+      customNumber = Number(input);
+    } else if (customNumber > randomNumber) {
+      const input = await askQuestion('Меньше: ');
+      if (checkNumber(input)) {
+        console.log(UNCORRECT_OUTPUT);
+        continue;
+      }
+      customNumber = Number(input);
+    } else if (customNumber == randomNumber) {
+        console.log(`Отгадано число ${customNumber}`);
+        break;
     }
+  }
 
-    rl.close();
+  rl.close();
 }
 
 main();
