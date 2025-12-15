@@ -10,59 +10,55 @@ const ALIASES = {
 }
 
 function showPastOrfutureDate(argv, isPast = false) {
-    const errors = [];
     const data = argv.argv;
-    let changetDate = new Date();
+    let changedDate = new Date();
 
-    if (!data[ALIASES.year] && !data[ALIASES.month] && !data[ALIASES.date]) {
-        console.error('Необхидимы ввести флаг(и) и аргумент(ы), попробуйте заново');
-        errors.push('Необхидимы ввести флаг(и) и аргумент(ы), попробуйте заново');
+    if (data[ALIASES.year] === undefined
+        && data[ALIASES.month] === undefined
+        && data[ALIASES.date] !== undefined
+    ) {
+        console.error('Необходимо ввести флаг(и) и аргумент(ы), попробуйте заново');
         return;
     };
 
     const checkArgvValue = (value) => {
         if (typeof(value) !== 'number') {
             console.error('Аргумент должен быть числом');
-            errors.push('Аргумент должен быть числом');
-            return false;
+            return;
         }
         return true;
     }
 
     const setChangeDate = (alias) => {            
-        let currentDate = new Date();
-
         const getTargetValue = (currentValue, argvValue) => isPast
             ? currentValue - argvValue
             : currentValue + argvValue;
 
         if (alias === ALIASES.year) {
-            const targetValue = getTargetValue(currentDate.getFullYear(), data[alias]);
-            changetDate.setFullYear(targetValue);
+            const targetValue = getTargetValue(changedDate.getFullYear(), data[alias]);
+            changedDate.setFullYear(targetValue);
         } else if (alias === ALIASES.month) {
-            const targetValue = getTargetValue(currentDate.getMonth(), data[alias]);
-            changetDate.setMonth(targetValue);
+            const targetValue = getTargetValue(changedDate.getMonth(), data[alias]);
+            changedDate.setMonth(targetValue);
         } else if (alias === ALIASES.date) {
-            const targetValue = getTargetValue(currentDate.getDate(), data[alias]);
-            changetDate.setDate(targetValue);
+            const targetValue = getTargetValue(changedDate.getDate(), data[alias]);
+            changedDate.setDate(targetValue);
         }
     }
     
-    if (data[ALIASES.year] && checkArgvValue(data[ALIASES.year]) && !errors.length) {
+    if (data[ALIASES.year] && checkArgvValue(data[ALIASES.year])) {
         setChangeDate(ALIASES.year);
     }
 
-    if (data[ALIASES.month] && checkArgvValue(data[ALIASES.month]) && !errors.length) {
+    if (data[ALIASES.month] && checkArgvValue(data[ALIASES.month])) {
         setChangeDate(ALIASES.month);
     }
 
-    if (data[ALIASES.date] && checkArgvValue(data[ALIASES.date]) && !errors.length) {
+    if (data[ALIASES.date] && checkArgvValue(data[ALIASES.date])) {
         setChangeDate(ALIASES.date);
     }
 
-    if (!errors.length) {
-        console.log(changetDate);
-    }
+    console.log(changedDate.toISOString());
 }
 
 yargs(hideBin(process.argv))
