@@ -4,7 +4,7 @@
   "main": "index.js",
   "bin": {
     "date": "./002-console/date.js",
-    "game": "./002-console/game.js"
+    "game": "./004-stream/game.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
