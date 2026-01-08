@@ -26,106 +26,56 @@ function askQuestion(query) {
   });
 }
 
-// async function getWeatherData(city) {
-//     const outputData = {
-//         errorText: '',
-//         cityTemperatur: '',
-//     };
-//     const path = `${CONFIG.url}current.json?key=${CONFIG.apiKey}&q=${city}&aqi=no`
-    
-//     http.get(path, (res) => {
-//         const { statusCode } = res;
-//         const contentType = res.headers['content-type'];
+function fetchData(url) {
+    console.log('Загружаем данные...');
 
-//         if (statusCode === 400) {
-//             outputData.errorText = CLIENT_TEXT.errorValue;
-//             return;
-//         } else if (!/^application\/json/.test(contentType)) {
-//             outputData.errorText = CLIENT_TEXT.errorServerRequest;
-//             return;
-//         }
+    return new Promise((resolve, reject) => {
+        http.get(url, (res) => {
+            const { statusCode } = res;
+            let error = '';
 
-//         res.setEncoding('utf8');
-//         let rowData = '';
-//         res.on('data', (chunk) => {
-//             rowData += chunk;
-//         })
-//         res.on('end', () => {
-//             try {
-//                 const parseData = JSON.parse(rawData);
+            if (statusCode === 400) {
+                error = CLIENT_TEXT.errorClientRequest;
+            } else {
+                error = CLIENT_TEXT.errorServerRequest;
+            }
 
-//                 if (parseData.current.temp_c) {
-//                     outputData.cityTemperatur = parseData.current.temp_c;
-//                     return;
-//                 } else {
-//                     outputData.errorText = CLIENT_TEXT.errorServerRequest;
-//                     return;
-//                 }
-//             } catch {
-//                 outputData.errorText = CLIENT_TEXT.errorServerRequest;
-//                 return;
-//             }
-//         })
-//     }).on('error', () => {
-//         outputData.errorText = CLIENT_TEXT.errorServerRequest;
-//         return;
-//     });
+            res.setEncoding('utf8');
+            let rowData = '';
+            res.on('data', (chunk) => {
+                rowData += chunk;
+            });
 
-//     return outputData;
-// }
+            res.on('end', () => {
+                try {
+                    const parseData = JSON.parse(rowData);
+
+                    if (parseData.current.temp_c) {
+                        return resolve(parseData.current.temp_c);
+                    }
+                } catch {
+                    return reject(error);
+                }
+            });
+        });
+    });
+}
 
 async function main() {
     while (true) {
-        const outputData = {
-            errorText: '',
-            cityTemperatur: '',
-        };
         const input = await askQuestion(CLIENT_TEXT.enterText);
         
         if (input) {
-            console.log('Загружаем данные...');
             const path = `${CONFIG.url}current.json?key=${CONFIG.apiKey}&q=${input}&aqi=no`
             
-            http.get(path, (res) => {
-                const { statusCode } = res;
-                const contentType = res.headers['content-type'];
-
-                if (statusCode === 400) {
-                    outputData.errorText = CLIENT_TEXT.errorValue;
-                    return;
-                } else if (!/^application\/json/.test(contentType)) {
-                    outputData.errorText = CLIENT_TEXT.errorServerRequest;
-                    return;
-                }
-
-                res.setEncoding('utf8');
-                let rowData = '';
-                res.on('data', (chunk) => {
-                    rowData += chunk;
+            await fetchData(path)
+                .then((data) => {
+                    console.log(`Температура: ${data}`);
                 })
-                res.on('end', () => {
-                    console.log('Данные получены!');
-
-                    try {
-                        const parseData = JSON.parse(rowData);
-
-                        if (parseData.current.temp_c) {
-                            outputData.cityTemperatur = parseData.current.temp_c;
-                            console.log(`Температура: ${outputData.cityTemperatur}`);
-                        } else {
-                            outputData.errorText = CLIENT_TEXT.errorServerRequest;
-                            console.log('errorText', outputData.errorText);
-                        }
-                    } catch {
-                        outputData.errorText = CLIENT_TEXT.errorServerRequest;
-                        console.log('errorText', outputData.errorText);
-                    }
+                .catch((error) => {
+                    console.error(error);
                 })
-            }).on('error', () => {
-                outputData.errorText = CLIENT_TEXT.errorServerRequest;
-                return;
-            });
-
+            
             continue;
         }
     }
