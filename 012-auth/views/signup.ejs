@@ -1,0 +1,15 @@
+<form action="/api/user/signup" method="post">
+    <h2>Пользователь не найден. Создать аккаунт?</h3>
+
+    <div>
+        <label>Логин:</label>
+        <input name="username" value="<%= username %>" />
+    </div>
+    <div>
+        <label>Пароль:</label>
+        <input name="password" value="<%= password %>" />
+    </div>
+    <div>
+        <input type="submit" value="Зарегистрироваться" />
+    </div>
+</form>
